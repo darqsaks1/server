@@ -25,7 +25,7 @@ app.post("/send-email", (req, res) => {
   });
 
   const mailOptions = {
-    from: email,
+    from: process.env.SMTP_USER1,
     to: process.env.SMTP_USER, // отправляем на свой же email
     subject: "Новая заявка с формы обратного звонка",
     text: `Имя: ${name}\nEmail: ${email}\nТелефон: ${phone}\nКомментарий: ${comment}`,
@@ -39,7 +39,7 @@ app.post("/send-email", (req, res) => {
       console.error(" !!Ошибка при отправке письма:",  "SMTP_USER:", process.env.SMTP_USER, "SMTP_PASS:", process.env.SMTP_PASS ,error);
       return res
         .status(500)
-        .json({ message: "Ошибка при отправке письма", error });
+        .json({ message: "Ошибка при отправке письма", "SMTP_USER:", process.env.SMTP_USER, "SMTP_PASS:", process.env.SMTP_PASS ,  error });
     }
     res.status(200).json({ message: "Письмо успешно отправлено!" });
   });
