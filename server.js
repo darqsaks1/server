@@ -2,6 +2,7 @@ require("dotenv").config(); // Подключение переменных из 
 const express = require("express");
 const nodemailer = require("nodemailer");
 const bodyParser = require("body-parser");
+const cors = require("cors");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -9,9 +10,20 @@ const PORT = process.env.PORT || 3001;
 // Middleware для обработки JSON данных
 app.use(bodyParser.json());
 
+// Разрешаем CORS для вашего домена (например, https://maketravel.by)
+app.use(cors({
+  origin: "https://maketravel.by", // Разрешаем запросы с этого домена
+  methods: ['GET', 'POST'], // Разрешаем только GET и POST
+  allowedHeaders: ['Content-Type'], // Разрешаем заголовок Content-Type
+}));
+
 // Маршрут для отправки email
 app.post("/send-email", (req, res) => {
   const { name, email, phone, comment } = req.body;
+
+  if (!name || !email || !phone || !comment) {
+    return res.status(400).json({ message: "Все поля должны быть заполнены" });
+  }
 
   // Конфигурация Nodemailer для отправки через Яндекс Почту
   const transporter = nodemailer.createTransport({
@@ -34,21 +46,10 @@ app.post("/send-email", (req, res) => {
   // Отправляем email
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
-      console.log("SMTP_USER:", process.env.SMTP_USER);
-      console.log("SMTP_PASS:", process.env.SMTP_PASS);
-      console.error(
-        " !!Ошибка при отправке письма:",
-        "SMTP_USER:",
-        process.env.SMTP_USER,
-        "SMTP_USER1:",
-        process.env.SMTP_USER1,
-        "SMTP_PASS:",
-        process.env.SMTP_PASS,
-        error
-      );
-      return res
-        .status(500)
-        .json({ message: "Ошибка при отправке письма", error });
+      console.log("SMTP_USER:", process.env.SMTP_USER); // Отладочная информация
+      console.log("SMTP_PASS:", process.env.SMTP_PASS ? 'Exists' : 'Not Set'); // Проверяем, загружена ли переменная
+      console.error("Ошибка при отправке письма:", error); // Логируем ошибку
+      return res.status(500).json({ message: "Ошибка при отправке письма", error });
     }
     res.status(200).json({ message: "Письмо успешно отправлено!" });
   });
