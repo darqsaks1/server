@@ -25,7 +25,7 @@ app.post("/send-email", (req, res) => {
   });
 
   const mailOptions = {
-    from: process.env.SMTP_USER1,
+    to: process.env.SMTP_USER, // отправляем на свой же email
     to: process.env.SMTP_USER, // отправляем на свой же email
     subject: "Новая заявка с формы обратного звонка",
     text: `Имя: ${name}\nEmail: ${email}\nТелефон: ${phone}\nКомментарий: ${comment}`,
