@@ -36,7 +36,7 @@ app.post("/send-email", (req, res) => {
     if (error) {
       console.log("SMTP_USER:", process.env.SMTP_USER);
       console.log("SMTP_PASS:", process.env.SMTP_PASS);
-      console.error("Ошибка при отправке письма:", error);
+      console.error(" !!Ошибка при отправке письма:",  "SMTP_USER:", process.env.SMTP_USER, "SMTP_PASS:", process.env.SMTP_PASS ,error);
       return res
         .status(500)
         .json({ message: "Ошибка при отправке письма", error });
